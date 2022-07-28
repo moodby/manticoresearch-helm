@@ -1,0 +1,21 @@
+{{- if and .Values.exporter.enabled .Values.exporter.serviceMonitor }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: {{ include "manticoresearch.fullname" . }}
+  labels:
+    {{- include "manticoresearch.labels" . | nindent 4 }}
+spec:
+  endpoints:
+  - path: /metrics
+    port: 8081
+    scheme: http
+    scrapeTimeout: 30s
+  jobLabel: {{ include "manticoresearch.fullname" . }}
+  namespaceSelector:
+    matchNames:
+    - {{ .Release.Namespace }}
+  selector:
+    matchLabels:
+      {{- include "manticoresearch.selectorLabels" . | nindent 6 }}
+{{- end }}

@@ -96,6 +96,7 @@ exporter:
     repository: manticoresearch/prometheus-exporter
     pullPolicy: IfNotPresent
 #    tag: 3.6.0.0
+  serviceMonitor: false
   annotations:
     prometheus.io/path: /metrics
     prometheus.io/port: "8081"
