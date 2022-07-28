@@ -4,15 +4,20 @@ metadata:
   name: {{ include "manticoresearch.fullname" . }}-worker-svc
   labels:
     name: {{ include "manticoresearch.fullname" . }}-worker-svc
-    {{- include "manticoresearch.labels" . | nindent 4 }}
+    {{- include "manticoresearch.componentLabels" (list "worker" .) | nindent 4 }}
 spec:
   clusterIP: "None"
   ports:
-    - port: {{ .Values.worker.service.ql.port }}
-      targetPort: {{ .Values.worker.service.ql.targetPort }}
-      name: ql
-    - port: {{ .Values.worker.service.http.port }}
-      targetPort: {{ .Values.worker.service.http.targetPort }}
-      name: http
+  - port: {{ .Values.worker.service.ql.port }}
+    targetPort: {{ .Values.worker.service.ql.targetPort }}
+    name: ql
+  - port: {{ .Values.worker.service.http.port }}
+    targetPort: {{ .Values.worker.service.http.targetPort }}
+    name: http
+  {{- if and .Values.exporter.enabled .Values.exporter.serviceMonitor }}
+  - port: {{ .Values.exporter.port }}
+    targetPort: {{ .Values.exporter.port }}
+    name: monitoring
+  {{- end }}
   selector:
-    name: {{ include "manticoresearch.fullname" . }}-worker
+    {{- include "manticoresearch.componentSelectorLabels" (list "worker" .) | nindent 4 }}

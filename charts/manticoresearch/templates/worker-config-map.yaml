@@ -3,8 +3,7 @@ kind: ConfigMap
 metadata:
   name: {{ include "manticoresearch.fullname" . }}-worker-config
   labels:
-    {{- include "manticoresearch.labels" . | nindent 4 }}
+    {{- include "manticoresearch.componentLabels" (list "worker" .) | nindent 4 }}
 data:
   manticore.conf:
     {{ toYaml .Values.worker.config.content | indent 4 }}
-

@@ -4,22 +4,22 @@ metadata:
   name: {{ include "manticoresearch.fullname" . }}-worker
   labels:
     name: {{ include "manticoresearch.fullname" . }}-worker
-    label: "{{ include "manticoresearch.fullname" . }}-worker"
-    app.kubernetes.io/component: worker
-    {{- include "manticoresearch.labels" . | nindent 4 }}
+    label: {{ include "manticoresearch.fullname" . }}-worker
+    {{- include "manticoresearch.componentLabels" (list "worker" .) | nindent 4 }}
 spec:
   replicas: {{ .Values.worker.replicaCount }}
   selector:
     matchLabels:
-      app.kubernetes.io/component: worker
-      {{- include "manticoresearch.selectorLabels" . | nindent 6 }}
+      {{- include "manticoresearch.componentSelectorLabels" (list "worker" .) | nindent 6 }}
   serviceName: {{ include "manticoresearch.fullname" . }}-worker-svc
   template:
     metadata:
       {{- if or .Values.exporter.enabled .Values.podAnnotations }}
       annotations:
-        {{- if .Values.exporter.enabled }}
-        {{- toYaml .Values.exporter.annotations | nindent 8 }}
+        {{- if and .Values.exporter.enabled .Values.exporter.annotations }}
+        prometheus.io/path: {{ .Values.exporter.path | quote }}
+        prometheus.io/port: {{ .Values.exporter.port | quote }}
+        prometheus.io/scrape: "true"
         {{- end }}
         {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
@@ -28,8 +28,7 @@ spec:
       labels:
         name: "{{ include "manticoresearch.fullname" . }}-worker"
         label: "manticore-worker"
-        app.kubernetes.io/component: worker
-        {{- include "manticoresearch.selectorLabels" . | nindent 8 }}
+        {{- include "manticoresearch.componentSelectorLabels" (list "worker" .) | nindent 8 }}
     spec:
       serviceAccountName: {{ include "manticoresearch.serviceAccountName" . }}
       {{- with .Values.imagePullSecrets }}
@@ -97,7 +96,7 @@ spec:
         livenessProbe:
           httpGet:
             path: /health
-            port: {{ index .Values.exporter.annotations "prometheus.io/port" }}
+            port: {{ .Values.exporter.port }}
           initialDelaySeconds: 3
           periodSeconds: 3
         resources:

@@ -4,20 +4,20 @@ metadata:
   name: {{ include "manticoresearch.fullname" . }}-balancer
   labels:
     name: {{ include "manticoresearch.fullname" . }}-balancer
-    app.kubernetes.io/component: balancer
-    {{- include "manticoresearch.labels" . | nindent 4 }}
+    {{- include "manticoresearch.componentLabels" (list "balancer" .) | nindent 4 }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/component: balancer
-      {{- include "manticoresearch.selectorLabels" . | nindent 6 }}
+      {{- include "manticoresearch.componentSelectorLabels" (list "balancer" .) | nindent 6 }}
   template:
     metadata:
       {{- if or .Values.exporter.enabled .Values.podAnnotations }}
       annotations:
-        {{- if .Values.exporter.enabled }}
-        {{- toYaml .Values.exporter.annotations | nindent 8 }}
+        {{- if and .Values.exporter.enabled .Values.exporter.annotations }}
+        prometheus.io/path: {{ .Values.exporter.path | quote }}
+        prometheus.io/port: {{ .Values.exporter.port | quote }}
+        prometheus.io/scrape: "true"
         {{- end }}
         {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
@@ -25,8 +25,7 @@ spec:
       {{- end }}
       labels:
         name: {{ include "manticoresearch.fullname" . }}-balancer
-        app.kubernetes.io/component: balancer
-        {{- include "manticoresearch.selectorLabels" . | nindent 8 }}
+        {{- include "manticoresearch.componentSelectorLabels" (list "balancer" .) | nindent 8 }}
     spec:
       serviceAccountName: {{ include "manticoresearch.serviceAccountName" . }}
       {{- with .Values.imagePullSecrets }}
@@ -90,7 +89,7 @@ spec:
         livenessProbe:
           httpGet:
             path: /health
-            port: {{ index .Values.exporter.annotations "prometheus.io/port" }}
+            port: {{ .Values.exporter.port }}
           initialDelaySeconds: 3
           periodSeconds: 3
         resources:
