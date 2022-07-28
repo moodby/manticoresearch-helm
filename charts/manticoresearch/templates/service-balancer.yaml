@@ -4,7 +4,7 @@ metadata:
   name: {{ include "manticoresearch.fullname" . }}-balancer-svc
   labels:
     name: {{ include "manticoresearch.fullname" . }}-balancer-svc
-    {{- include "manticoresearch.labels" . | nindent 4 }}
+    {{- include "manticoresearch.componentLabels" (list "balancer" .) | nindent 4 }}
 spec:
   ports:
   - port: {{ .Values.balancer.service.ql.port }}
@@ -16,5 +16,10 @@ spec:
   - port: {{ .Values.balancer.service.http.port }}
     targetPort: {{ .Values.balancer.service.http.targetPort }}
     name: http
+  {{- if and .Values.exporter.enabled .Values.exporter.serviceMonitor }}
+  - port: {{ .Values.exporter.port }}
+    targetPort: {{ .Values.exporter.port }}
+    name: monitoring
+  {{- end }}
   selector:
-    name: {{ include "manticoresearch.fullname" . }}-balancer
+    {{- include "manticoresearch.componentSelectorLabels" (list "balancer" .) | nindent 4 }}

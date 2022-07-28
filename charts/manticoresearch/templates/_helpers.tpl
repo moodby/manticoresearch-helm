@@ -42,12 +42,22 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
+{{- define "manticoresearch.componentLabels" -}}
+app.kubernetes.io/component: {{ first . }}
+{{ include "manticoresearch.labels" (index . 1) }}
+{{- end }}
+
 {{/*
 Selector labels
 */}}
 {{- define "manticoresearch.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "manticoresearch.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
+{{- end }}
+
+{{- define "manticoresearch.componentSelectorLabels" -}}
+app.kubernetes.io/component: {{ first . }}
+{{ include "manticoresearch.selectorLabels" (index . 1) }}
 {{- end }}
 
 {{/*
