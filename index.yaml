@@ -3,6 +3,16 @@ entries:
   manticoresearch:
   - apiVersion: v2
     appVersion: 5.0.0.2
+    created: "2022-07-28T11:54:16.105180881Z"
+    description: A Helm chart for Kubernetes
+    digest: 2b1d3e4dbed57076d8ff822ac744341d10be5e1516efac0c53b2a01842643a31
+    name: manticoresearch
+    type: application
+    urls:
+    - https://github.com/moodby/manticoresearch-helm/releases/download/manticoresearch-5.0.3/manticoresearch-5.0.3.tgz
+    version: 5.0.3
+  - apiVersion: v2
+    appVersion: 5.0.0.2
     created: "2022-07-28T09:14:39.957193516Z"
     description: A Helm chart for Kubernetes
     digest: 07a60feea55c401100a00ea174417a4c28c0aae1e18344253a06febbcecd6d51
@@ -11,4 +21,4 @@ entries:
     urls:
     - https://github.com/moodby/manticoresearch-helm/releases/download/manticoresearch-5.0.02/manticoresearch-5.0.02.tgz
     version: 5.0.02
-generated: "2022-07-28T09:14:39.957202216Z"
+generated: "2022-07-28T11:54:16.105190481Z"
